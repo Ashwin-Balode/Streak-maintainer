@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Glassmorphism Card</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[url('gojo_back.jpg')] bg-cover bg-center min-h-screen flex items-center justify-center">
+
+  <div class="backdrop-blur-md bg-black/5 border border-white/5 text-white p-6 rounded-2xl shadow-2xl max-w-sm w-full">
+    <h2 class="text-2xl font-semibold mb-2">Get Up Early!<span id="streak_fire"></span></h2>
+    <p class="text-gray-300 mb-4">
+        Descipline
+    </p>
+    <button class="bg-white/10 hover:bg-white/20 text-white font-medium py-2 px-4 rounded-lg transition" id="add_streak">
+      💪+
+    </button>
+    <p class="mt-4 text-grey-400" id="streak_status"></p>
+  </div>
+
+  <script>
+        const button = document.getElementById('add_streak');
+        const status = document.getElementById('streak_status');
+        const streak_fire = document.getElementById('streak_fire');
+
+        function getStreakCount(dateArray){
+            const sorted_date = dateArray.map(d => new Date(d)).sort((a,b) => b - a);
+            let count = 1;
+            for(let i=1;i<sorted_date.length;i++){
+                const diff = (sorted_date[i-1] - sorted_date[i]) / (1000*60*60*24);
+                if(diff === 1){count++;}else{break;}
+            }
+            return count;
+        }
+
+        function updateStreakFire(){
+            let streakDates = JSON.parse(localStorage.getItem('streaks') || []);
+            if(streakDates.length == 0){
+                streak_fire.textContent = '';
+                return;
+            }
+            const streakCount = getStreakCount(streakDates);
+            streak_fire.textContent = ` 🔥${streakCount}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+            updateStreakFire();
+        });
+
+        button.addEventListener('click',function(){
+                const today = new Date().toISOString().split('T')[0];
+                let streak = JSON.parse(localStorage.getItem('streaks') || '[]');
+
+                if(!streak.includes(today)){
+                    streak.push(today)
+                    localStorage.setItem('streaks',JSON.stringify(streak));
+                    status.textContent =  `✅ Streak recorded for ${today}`;
+                }
+                else{
+                    status.textContent = `⏳ Already recorded for today`;
+                }
+                updateStreakFire();
+                console.log("All streak dates:",streak);
+            }
+        );
+        
+  </script>
+
+</body>
+</html>
